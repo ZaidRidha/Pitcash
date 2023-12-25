@@ -21,18 +21,14 @@ class _ExistingProjectState extends State<ExistingProject> {
 
   Future<void> _fetchDataFromApi() async {
     try {
-      // Get the stored 'id' from SharedPreferences
       final prefs = await SharedPreferences.getInstance();
       final String myId = prefs.getString('id') ?? '';
 
       if (myId.isEmpty) {
-        // Handle case where there is no ID in SharedPreferences
         print('No ID found in SharedPreferences.');
-        // Potentially set an error state or inform the user
         return;
       }
 
-      // Fetch all the necessary data (projects, pitcash, and expenses)
       final projectsResponse = await http.get(
           Uri.parse('https://www.buraqgrp.com/admin/api.php?table=projects'));
       final pitcashResponse = await http.get(
@@ -40,7 +36,6 @@ class _ExistingProjectState extends State<ExistingProject> {
       final expensesResponse = await http.get(
           Uri.parse('https://www.buraqgrp.com/admin/api.php?table=expenses'));
 
-      // Check for successful responses
       if (projectsResponse.statusCode == 200 &&
           pitcashResponse.statusCode == 200 &&
           expensesResponse.statusCode == 200) {
@@ -48,7 +43,6 @@ class _ExistingProjectState extends State<ExistingProject> {
         var pitcashResponseBody = json.decode(pitcashResponse.body) as List;
         var expensesResponseBody = json.decode(expensesResponse.body) as List;
 
-        // Filter pitcash and expenses for entries where the 'debtor' or 'creditor' matches 'myId'
         final relevantPitcash = pitcashResponseBody
             .where((pitcash) =>
                 pitcash['debtor'].toString() == myId ||
@@ -61,17 +55,14 @@ class _ExistingProjectState extends State<ExistingProject> {
                 expense['creditor'].toString() == myId)
             .toList();
 
-        // Get a list of project IDs from the relevant pitcash and expenses entries
         final relevantProjectIds = {
           ...relevantPitcash.map((pitcash) => pitcash['project'].toString()),
           ...relevantExpenses.map((expense) => expense['project'].toString())
         };
 
-        // Calculate sums of pitcash and expenses for each project
         Map<String, double> projectPitcashSums = {};
         Map<String, double> projectExpensesSums = {};
 
-        // Sum amounts from Pitcash by project ID
         for (var pitcashEntry in relevantPitcash) {
           String projectId = pitcashEntry['project'].toString();
           double amount =
@@ -80,7 +71,6 @@ class _ExistingProjectState extends State<ExistingProject> {
               (projectPitcashSums[projectId] ?? 0) + amount;
         }
 
-        // Sum amounts from Expenses by project ID
         for (var expenseEntry in relevantExpenses) {
           String projectId = expenseEntry['project'].toString();
           double amount =
@@ -89,7 +79,6 @@ class _ExistingProjectState extends State<ExistingProject> {
               (projectExpensesSums[projectId] ?? 0) + amount;
         }
 
-        // Map projects data and include only those with an 'id' in 'relevantProjectIds'
         setState(() {
           projectsData = projectsResponseBody
               .where((project) =>
@@ -100,12 +89,12 @@ class _ExistingProjectState extends State<ExistingProject> {
             String projectId = projectMap['id'].toString();
             double predecessor = projectPitcashSums[projectId] ?? 0.0;
             double expense = projectExpensesSums[projectId] ?? 0.0;
-            double balance = predecessor - expense; // Calculate the balance
+            double balance = predecessor - expense;
 
             return {
               'ref_no': projectMap['ref_no'].toString(),
               'name': projectMap['name'].toString(),
-              'Balance': balance.toString(), // Set the calculated balance
+              'Balance': balance.toString(),
               'Expense': expense.toString(),
               'Predecessor': predecessor.toString(),
             };
@@ -113,12 +102,9 @@ class _ExistingProjectState extends State<ExistingProject> {
           filteredProjectsData = List<Map<String, dynamic>>.from(projectsData);
         });
       } else {
-        // Handle unsuccessful responses
-        print(
-            "Error fetching data: Projects status code: ${projectsResponse.statusCode}, Pitcash status code: ${pitcashResponse.statusCode}, Expenses status code: ${expensesResponse.statusCode}");
+        print("Error fetching data from the API");
       }
     } catch (e) {
-      // Handle any exceptions during the fetch operation
       print("Exception fetching data from the API: $e");
     }
   }
@@ -137,7 +123,7 @@ class _ExistingProjectState extends State<ExistingProject> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Existing Projects'),
+        title: Text('المشاريع الحالية'),
       ),
       body: Column(
         children: [
@@ -146,7 +132,7 @@ class _ExistingProjectState extends State<ExistingProject> {
             child: TextField(
               controller: searchController,
               decoration: InputDecoration(
-                hintText: 'Search',
+                hintText: 'بحث',
                 suffixIcon: Icon(Icons.search),
               ),
               onChanged: (value) {
@@ -160,19 +146,19 @@ class _ExistingProjectState extends State<ExistingProject> {
               child: DataTable(
                 columns: const <DataColumn>[
                   DataColumn(
-                    label: Text('Ref No'),
+                    label: Text('رقم المرجع'),
                   ),
                   DataColumn(
-                    label: Text('Name'),
+                    label: Text('الاسم'),
                   ),
                   DataColumn(
-                    label: Text('Balance'),
+                    label: Text('الرصيد'),
                   ),
                   DataColumn(
-                    label: Text('Expense'),
+                    label: Text('المصروفات'),
                   ),
                   DataColumn(
-                    label: Text('Predecessor'),
+                    label: Text('السابق'),
                   ),
                 ],
                 rows: filteredProjectsData

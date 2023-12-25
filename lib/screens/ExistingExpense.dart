@@ -12,6 +12,7 @@ class _ExistingExpenseState extends State<ExistingExpense> {
   List<Map<String, dynamic>> expensesData = [];
   Map<String, String> projectNames = {}; // Stores project IDs and their names
   String? userId;
+
   @override
   void initState() {
     super.initState();
@@ -39,7 +40,6 @@ class _ExistingExpenseState extends State<ExistingExpense> {
       List<dynamic> expenses = json.decode(response.body);
       List<dynamic> projects = json.decode(projectResponse.body);
 
-      // Populate the projectNames map
       for (var project in projects) {
         projectNames[project['id'].toString()] = project['name'].toString();
       }
@@ -53,7 +53,8 @@ class _ExistingExpenseState extends State<ExistingExpense> {
           String projectId = expense['project'].toString();
           return {
             'amount': expense['amount'],
-            'project': projectNames[projectId] ?? 'Unknown', // Use project name
+            'project':
+                projectNames[projectId] ?? 'غير معروف', // Use project name
             'date': expense['date'],
           };
         }).toList();
@@ -67,22 +68,21 @@ class _ExistingExpenseState extends State<ExistingExpense> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Existing Expenses'),
+        title: Text('المصروفات الحالية'),
       ),
       body: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: DataTable(
           columns: const [
-            DataColumn(label: Text('Amount')),
-            DataColumn(label: Text('Project Name')),
-            DataColumn(label: Text('Date')),
+            DataColumn(label: Text('المبلغ')),
+            DataColumn(label: Text('اسم المشروع')),
+            DataColumn(label: Text('التاريخ')),
           ],
           rows: expensesData
               .map(
                 (expense) => DataRow(cells: [
                   DataCell(Text(expense['amount'].toString())),
-                  DataCell(Text(expense['project']
-                      .toString())), // Display project name instead of ID
+                  DataCell(Text(expense['project'].toString())),
                   DataCell(Text(expense['date'].toString())),
                 ]),
               )

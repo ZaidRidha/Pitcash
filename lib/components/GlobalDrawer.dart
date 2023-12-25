@@ -13,7 +13,7 @@ import 'package:pitcash/screens/PredecessorAddition.dart';
 import 'package:pitcash/screens/ExistingExpense.dart';
 import 'package:pitcash/screens/ExpenseAddition.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart'; // If you decide to use shared_preferences for storing user data or tokens
+import 'package:shared_preferences/shared_preferences.dart';
 
 class GlobalDrawer extends StatefulWidget {
   @override
@@ -33,7 +33,7 @@ class _GlobalDrawerState extends State<GlobalDrawer> {
   Future<void> _getUserMode() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      userMode = prefs.getString('mode'); // Assuming mode is stored as a string
+      userMode = prefs.getString('mode');
     });
   }
 
@@ -61,15 +61,14 @@ class _GlobalDrawerState extends State<GlobalDrawer> {
             ),
             ExpansionTile(
               title: Text(
-                'Projects',
+                'المشاريع',
                 style: TextStyle(
                   color: Colors.white,
                 ),
               ),
               children: [
                 ListTile(
-                  title:
-                      Text('existing', style: TextStyle(color: Colors.white)),
+                  title: Text('موجود', style: TextStyle(color: Colors.white)),
                   onTap: () {
                     Navigator.push(
                       context,
@@ -79,10 +78,9 @@ class _GlobalDrawerState extends State<GlobalDrawer> {
                     );
                   },
                 ),
-                if (userMode == '1') // Conditionally render based on mode
+                if (userMode == '1')
                   ListTile(
-                    title:
-                        Text('addition', style: TextStyle(color: Colors.white)),
+                    title: Text('يضيف', style: TextStyle(color: Colors.white)),
                     onTap: () {
                       Navigator.push(
                         context,
@@ -94,19 +92,17 @@ class _GlobalDrawerState extends State<GlobalDrawer> {
                   ),
               ],
             ),
-            if (userMode ==
-                '1') // Check if userMode is '2' before rendering the ExpansionTile
+            if (userMode == '1')
               ExpansionTile(
                 title: Text(
-                  'Debtors',
+                  'المدينين',
                   style: TextStyle(
                     color: Colors.white,
                   ),
                 ),
                 children: [
                   ListTile(
-                    title:
-                        Text('existing', style: TextStyle(color: Colors.white)),
+                    title: Text('موجود', style: TextStyle(color: Colors.white)),
                     onTap: () {
                       Navigator.push(
                         context,
@@ -117,8 +113,7 @@ class _GlobalDrawerState extends State<GlobalDrawer> {
                     },
                   ),
                   ListTile(
-                    title:
-                        Text('addition', style: TextStyle(color: Colors.white)),
+                    title: Text('يضيف', style: TextStyle(color: Colors.white)),
                     onTap: () {
                       Navigator.push(
                         context,
@@ -132,15 +127,14 @@ class _GlobalDrawerState extends State<GlobalDrawer> {
               ),
             ExpansionTile(
               title: Text(
-                'Predecessor',
+                'السلف',
                 style: TextStyle(
                   color: Colors.white,
                 ),
               ),
               children: [
                 ListTile(
-                  title:
-                      Text('existing', style: TextStyle(color: Colors.white)),
+                  title: Text('موجود', style: TextStyle(color: Colors.white)),
                   onTap: () {
                     Navigator.push(
                       context,
@@ -150,10 +144,9 @@ class _GlobalDrawerState extends State<GlobalDrawer> {
                     );
                   },
                 ),
-                if (userMode == '1') // Conditionally render based on mode
+                if (userMode == '1')
                   ListTile(
-                    title:
-                        Text('addition', style: TextStyle(color: Colors.white)),
+                    title: Text('يضيف', style: TextStyle(color: Colors.white)),
                     onTap: () {
                       Navigator.push(
                         context,
@@ -167,15 +160,14 @@ class _GlobalDrawerState extends State<GlobalDrawer> {
             ),
             ExpansionTile(
               title: Text(
-                'The Expense',
+                'النفقات',
                 style: TextStyle(
                   color: Colors.white,
                 ),
               ),
               children: [
                 ListTile(
-                  title:
-                      Text('existing', style: TextStyle(color: Colors.white)),
+                  title: Text('موجود', style: TextStyle(color: Colors.white)),
                   onTap: () {
                     Navigator.push(
                       context,
@@ -185,10 +177,9 @@ class _GlobalDrawerState extends State<GlobalDrawer> {
                     );
                   },
                 ),
-                if (userMode == '2') // Conditionally render based on mode
+                if (userMode == '2')
                   ListTile(
-                    title:
-                        Text('addition', style: TextStyle(color: Colors.white)),
+                    title: Text('يضيف', style: TextStyle(color: Colors.white)),
                     onTap: () {
                       Navigator.push(
                         context,
@@ -202,15 +193,15 @@ class _GlobalDrawerState extends State<GlobalDrawer> {
             ),
             ExpansionTile(
               title: Text(
-                'My Information',
+                'معلوماتي',
                 style: TextStyle(
                   color: Colors.white,
                 ),
               ),
               children: [
                 ListTile(
-                  title: Text('My Information',
-                      style: TextStyle(color: Colors.white)),
+                  title:
+                      Text('معلوماتي', style: TextStyle(color: Colors.white)),
                   onTap: () {
                     Navigator.push(
                       context,
@@ -221,13 +212,13 @@ class _GlobalDrawerState extends State<GlobalDrawer> {
                   },
                 ),
                 ListTile(
-                  title: Text('Logout', style: TextStyle(color: Colors.white)),
+                  title: Text('تسجيل الخروج',
+                      style: TextStyle(color: Colors.white)),
                   onTap: () async {
                     SharedPreferences prefs =
                         await SharedPreferences.getInstance();
-                    await prefs.remove('uid'); // Clear the stored uid
+                    await prefs.remove('uid');
 
-                    // Navigate to the login screen and remove all other routes
                     Navigator.of(context).pushAndRemoveUntil(
                       MaterialPageRoute(builder: (context) => LoginScreen()),
                       (Route<dynamic> route) => false,

@@ -66,9 +66,9 @@ class _ExistingPredecessorState extends State<ExistingPredecessor> {
             String counterpartyId = isCreditor
                 ? transaction['debtor'].toString()
                 : transaction['creditor'].toString();
-            String counterpartyName = userNames[counterpartyId] ?? 'Unknown';
+            String counterpartyName = userNames[counterpartyId] ?? 'مجهول';
             String projectName =
-                projectNames[transaction['project'].toString()] ?? 'Unknown';
+                projectNames[transaction['project'].toString()] ?? 'مجهول';
             String amount = transaction['amount'].toString();
             String date = transaction['date'].toString();
 
@@ -92,16 +92,16 @@ class _ExistingPredecessorState extends State<ExistingPredecessor> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Pitcash Transactions'),
+        title: Text('معاملات Pitcash'),
       ),
       body: SingleChildScrollView(
-        scrollDirection: Axis.horizontal, // Enable horizontal scrolling
+        scrollDirection: Axis.horizontal,
         child: DataTable(
           columns: const [
-            DataColumn(label: Text('Creditor/Debtor')),
-            DataColumn(label: Text('Amount')),
-            DataColumn(label: Text('Project Name')),
-            DataColumn(label: Text('Date')),
+            DataColumn(label: Text('الدائن / المدين')),
+            DataColumn(label: Text('المبلغ')),
+            DataColumn(label: Text('اسم المشروع')),
+            DataColumn(label: Text('التاريخ')),
           ],
           rows: pitcashData
               .map(

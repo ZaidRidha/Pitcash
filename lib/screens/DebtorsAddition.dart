@@ -34,20 +34,17 @@ class _DebtorsAdditionState extends State<DebtorsAddition> {
         },
       );
       if (response.statusCode == 200) {
-        // Assuming a status code of 200 indicates success.
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Debtor added successfully!')),
+          SnackBar(content: Text('تم إضافة المدين بنجاح!')),
         );
       } else {
-        // If server responds with a different status code, assume failure.
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to add debtor.')),
+          SnackBar(content: Text('فشل في إضافة المدين.')),
         );
       }
     } catch (e) {
-      // If the request threw an exception, show an error message.
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
+        SnackBar(content: Text('خطأ: $e')),
       );
     }
   }
@@ -68,7 +65,7 @@ class _DebtorsAdditionState extends State<DebtorsAddition> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Debtors Addition'),
+        title: Text('إضافة المدينين'),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -78,48 +75,44 @@ class _DebtorsAdditionState extends State<DebtorsAddition> {
             TextField(
               controller: emailController,
               decoration: InputDecoration(
-                labelText: 'E-mail',
+                labelText: 'البريد الإلكتروني',
               ),
             ),
             TextField(
               controller: mobileNumberController,
               decoration: InputDecoration(
-                labelText: 'Mobile Number',
+                labelText: 'رقم الجوال',
                 prefixText: '* ',
               ),
             ),
             TextField(
               controller: nameController,
               decoration: InputDecoration(
-                labelText: 'Name',
+                labelText: 'الاسم',
                 prefixText: '* ',
               ),
             ),
-
             TextField(
               controller: addressController,
               decoration: InputDecoration(
-                labelText: 'Address',
+                labelText: 'العنوان',
               ),
             ),
             TextField(
               controller: countryController,
               decoration: InputDecoration(
-                labelText: 'Country',
+                labelText: 'الدولة',
               ),
             ),
             TextField(
               controller: cityController,
               decoration: InputDecoration(
-                labelText: 'City',
+                labelText: 'المدينة',
               ),
             ),
-            // Add a widget here for photograph upload if needed
-            // You will need to handle the logic for uploading and attaching the photograph
             ElevatedButton(
-              child: Text('Add Debtor'),
-              onPressed:
-                  submitDebtor, // Implement this method to submit the data
+              child: Text('إضافة المدين'),
+              onPressed: submitDebtor,
             ),
           ],
         ),

@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:intl/intl.dart'; // Add this line if you don't have it
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ExpenseAddition extends StatefulWidget {
@@ -11,57 +11,44 @@ class ExpenseAddition extends StatefulWidget {
 
 class _ExpenseAdditionState extends State<ExpenseAddition> {
   final _formKey = GlobalKey<FormState>();
-  String? selectedCreditorId; // Changed from selectedDebtorId
+  String? selectedCreditorId;
   String? selectedProjectId;
-  String? debtorId; // Store debtorId from SharedPreferences
+  String? debtorId;
   String? amount;
   DateTime selectedDate = DateTime.now();
   TextEditingController dateController = TextEditingController();
-  List<dynamic> creditors = []; // Changed to creditors
+  List<dynamic> creditors = [];
   List<dynamic> projects = [];
 
   @override
   void initState() {
     super.initState();
-    _fetchDebtorId(); // Fetch debtor ID from SharedPreferences
-    _fetchCreditorsAndProjects(); // Fetch creditors and projects
+    _fetchDebtorId();
+    _fetchCreditorsAndProjects();
   }
 
   Future<void> _fetchCreditorsAndProjects() async {
-    try {
-      final usersResponse = await http.get(
-          Uri.parse('https://www.buraqgrp.com/admin/api.php?table=pitusers'));
-      final projectsResponse = await http.get(
-          Uri.parse('https://www.buraqgrp.com/admin/api.php?table=projects'));
+    final usersResponse = await http.get(
+        Uri.parse('https://www.buraqgrp.com/admin/api.php?table=pitusers'));
+    final projectsResponse = await http.get(
+        Uri.parse('https://www.buraqgrp.com/admin/api.php?table=projects'));
 
-      if (usersResponse.statusCode == 200 &&
-          projectsResponse.statusCode == 200) {
-        setState(() {
-          var allUsers = json.decode(usersResponse.body);
-          creditors = allUsers
-              .where((user) => user['modes'].toString() == "1")
-              .toList();
-          projects = json.decode(projectsResponse.body); // Set projects list
-
-          // Additional Logging
-          print("Fetched Users: ${allUsers.length}");
-          print("Filtered Creditors: ${creditors.length}");
-          for (var creditor in creditors) {
-            print("Creditor: ID=${creditor['id']}, Name=${creditor['name']}");
-          }
-        });
-      } else {
-        print("Failed to fetch data");
-      }
-    } catch (e) {
-      print("Error: $e");
+    if (usersResponse.statusCode == 200 && projectsResponse.statusCode == 200) {
+      setState(() {
+        var allUsers = json.decode(usersResponse.body);
+        creditors =
+            allUsers.where((user) => user['modes'].toString() == "1").toList();
+        projects = json.decode(projectsResponse.body);
+      });
+    } else {
+      print("Failed to fetch data");
     }
   }
 
   Future<void> _fetchDebtorId() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      debtorId = prefs.getString('id'); // Get debtorId from SharedPreferences
+      debtorId = prefs.getString('id');
     });
   }
 
@@ -69,27 +56,15 @@ class _ExpenseAdditionState extends State<ExpenseAddition> {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 
-      if (debtorId == null ||
-          selectedCreditorId == null ||
-          selectedProjectId == null ||
-          amount == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Please fill in all the fields')),
-        );
-        return;
-      }
-
-      // Build the request payload
       var payload = {
         'amount': amount!,
         'debtor': selectedCreditorId!,
-        'creditor': debtorId!, // Add this line
+        'creditor': debtorId!,
         'project': selectedProjectId!,
         'date': dateController.text,
       };
 
       try {
-        // Make the POST request
         var response = await http.post(
           Uri.parse('https://www.buraqgrp.com/admin/api.php?table=expenses'),
           body: payload,
@@ -97,27 +72,23 @@ class _ExpenseAdditionState extends State<ExpenseAddition> {
 
         if (response.statusCode == 200) {
           var data = json.decode(response.body);
-
           if (data['success'] != null) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Entry added successfully!')),
+              SnackBar(content: Text('تمت إضافة المصروف بنجاح!')),
             );
           } else {
-            String errorMessage = data['error'] ?? 'Unknown error';
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Failed to add entry: $errorMessage')),
+              SnackBar(content: Text('فشل في إضافة المصروف.')),
             );
           }
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-                content:
-                    Text('Error submitting form: ${response.reasonPhrase}')),
+            SnackBar(content: Text('خطأ في إرسال النموذج')),
           );
         }
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error submitting form: $e')),
+          SnackBar(content: Text('خطأ: $e')),
         );
       }
     }
@@ -125,24 +96,21 @@ class _ExpenseAdditionState extends State<ExpenseAddition> {
 
   @override
   Widget build(BuildContext context) {
-    // Format the current date
     dateController.text = DateFormat('yyyy-MM-dd').format(selectedDate);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Expense Entry'),
+        title: Text('إضافة مصروف'),
       ),
-      body: Form(
-        key: _formKey,
-        child: Padding(
-          padding: const EdgeInsets.all(16.0), // Add more padding to the form
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment
-                .stretch, // Makes the button stretch to fill the width
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(bottom: 12.0),
-                child: DropdownButtonFormField(
+      body: SingleChildScrollView(
+        child: Form(
+          key: _formKey,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                DropdownButtonFormField(
                   value: selectedCreditorId,
                   onChanged: (String? newValue) {
                     setState(() {
@@ -150,23 +118,21 @@ class _ExpenseAdditionState extends State<ExpenseAddition> {
                     });
                   },
                   items: creditors.map<DropdownMenuItem<String>>((user) {
-                    print("Creating item for: ${user['name']}"); // Debug print
                     return DropdownMenuItem<String>(
                       value: user['id'].toString(),
                       child: Text(user['name'].toString()),
                     );
                   }).toList(),
-                  hint: Text('Select Creditor'),
-                  // Ensure the dropdown is styled and sized appropriately
+                  hint: Text('اختر الدائن'),
+                  decoration: InputDecoration(
+                    labelText: 'الدائن',
+                  ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 12.0),
-                child: DropdownButtonFormField(
+                DropdownButtonFormField(
                   value: selectedProjectId,
                   onChanged: (String? newValue) {
                     setState(() {
-                      selectedProjectId = newValue; // Correct this line
+                      selectedProjectId = newValue;
                     });
                   },
                   items: projects.map<DropdownMenuItem<String>>((project) {
@@ -175,21 +141,18 @@ class _ExpenseAdditionState extends State<ExpenseAddition> {
                       child: Text(project['name'].toString()),
                     );
                   }).toList(),
-                  hint: Text('Select Project'),
-                  // ... rest of your DropdownButtonFormField code
+                  hint: Text('اختر المشروع'),
+                  decoration: InputDecoration(
+                    labelText: 'المشروع',
+                  ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 12.0),
-                child: TextFormField(
+                TextFormField(
                   controller: dateController,
                   decoration: InputDecoration(
-                    labelText: 'Date',
+                    labelText: 'التاريخ',
                     suffixIcon: Icon(Icons.calendar_today),
                   ),
                   onTap: () async {
-                    FocusScope.of(context).requestFocus(
-                        new FocusNode()); // to prevent opening default keyboard
                     DateTime? picked = await showDatePicker(
                       context: context,
                       initialDate: selectedDate,
@@ -205,14 +168,11 @@ class _ExpenseAdditionState extends State<ExpenseAddition> {
                     }
                   },
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 12.0),
-                child: TextFormField(
-                  decoration: InputDecoration(labelText: 'Amount'),
+                TextFormField(
+                  decoration: InputDecoration(labelText: 'المبلغ'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter an amount';
+                      return 'الرجاء إدخال مبلغ';
                     }
                     return null;
                   },
@@ -221,16 +181,12 @@ class _ExpenseAdditionState extends State<ExpenseAddition> {
                   },
                   keyboardType: TextInputType.number,
                 ),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    _submitForm();
-                  }
-                },
-                child: Text('Submit'),
-              ),
-            ],
+                ElevatedButton(
+                  onPressed: _submitForm,
+                  child: Text('تقديم'),
+                ),
+              ],
+            ),
           ),
         ),
       ),

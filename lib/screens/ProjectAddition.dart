@@ -30,18 +30,17 @@ class _ProjectAdditionState extends State<ProjectAddition> {
       final responseBody = json.decode(response.body);
       if (responseBody['success'] != null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Project added successfully.")),
+          SnackBar(content: Text("تم إضافة المشروع بنجاح.")),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-              content:
-                  Text("Failed to add the project: ${responseBody['error']}")),
+              content: Text("فشل في إضافة المشروع: ${responseBody['error']}")),
         );
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Failed to send data to the server.")),
+        SnackBar(content: Text("فشل في إرسال البيانات إلى الخادم.")),
       );
     }
   }
@@ -59,7 +58,7 @@ class _ProjectAdditionState extends State<ProjectAddition> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Project Addition'),
+        title: Text('إضافة مشروع'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -69,29 +68,29 @@ class _ProjectAdditionState extends State<ProjectAddition> {
             TextField(
               controller: projectNameController,
               decoration: InputDecoration(
-                labelText: 'Project Name',
+                labelText: 'اسم المشروع',
               ),
             ),
             TextField(
               controller: cityController,
               decoration: InputDecoration(
-                labelText: 'City',
+                labelText: 'المدينة',
               ),
             ),
             TextField(
               controller: countryController,
               decoration: InputDecoration(
-                labelText: 'Country',
+                labelText: 'البلد',
               ),
             ),
             TextField(
               controller: addressController,
               decoration: InputDecoration(
-                labelText: 'Address',
+                labelText: 'العنوان',
               ),
             ),
             ElevatedButton(
-              child: Text('Submit'),
+              child: Text('تقديم'),
               onPressed: submitProject,
             ),
           ],

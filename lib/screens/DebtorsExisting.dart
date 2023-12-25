@@ -29,8 +29,7 @@ class _DebtorsExistingState extends State<DebtorsExisting> {
       setState(() {
         creditorId = newCreditorId;
       });
-      print(
-          'Creditor ID: $creditorId'); // This will log the creditorId to the console
+      print('Creditor ID: $creditorId');
       _fetchCashData();
     }
   }
@@ -57,24 +56,9 @@ class _DebtorsExistingState extends State<DebtorsExisting> {
   _filterAndMatchData() async {
     print('Filtering and matching data...');
 
-    /* 
-  // This section is commented out to disable filtering by creditor ID
-  // Filter the cashData to only include entries with matching creditor ID
-  List<Map<String, dynamic>> filteredCashData = cashData.where((cashEntry) {
-    String cashCreditorId = cashEntry['creditor'].toString(); // Assuming 'creditor' is the correct field name
-    return cashCreditorId == creditorId.toString(); // Convert both to string to ensure matching
-  }).toList();
-
-  // Log the filtered pitcash entries
-  for (var cashEntry in filteredCashData) {
-    print(cashEntry); // This will log each matching pitcash entry
-  }
-  */
-
     // Create a map to store the sum of amounts for each debtor
     Map<String, double> debtorSums = {};
 
-    // Sum the amounts for each debtor in cashData
     for (var cashEntry in cashData) {
       String debtorId = cashEntry['debtor'].toString();
       double amount = double.tryParse(cashEntry['amount'].toString()) ?? 0.0;
@@ -82,56 +66,35 @@ class _DebtorsExistingState extends State<DebtorsExisting> {
           ifAbsent: () => amount);
     }
 
-    // Fetch expense data and process it similarly
-    // Placeholder for actual expense data fetching
-    var expenseData = await fetchExpenseData(); // Replace with your actual call
+    var expenseData = await fetchExpenseData(); // Placeholder for actual call
     Map<String, double> expensesSums = {};
 
-    // Sum the expenses for each user
     for (var expenseEntry in expenseData) {
-      String userId = expenseEntry['debtor']
-          .toString(); // Assuming 'debtor' is the correct field
+      String userId = expenseEntry['debtor'].toString();
       double expenseAmount =
           double.tryParse(expenseEntry['amount'].toString()) ?? 0.0;
       expensesSums.update(userId, (currentSum) => currentSum + expenseAmount,
           ifAbsent: () => expenseAmount);
     }
 
-    /* 
-  // This section is also commented out since it depends on the filteredCashData
-  // Get the list of debtor IDs that are relevant for the filteredCashData
-  var validDebtorIds = filteredCashData.map((e) => e['debtor'].toString()).toSet();
-  */
-
     setState(() {
-      // Filter usersData based on validDebtorIds, only showing users that are relevant
-      displayData =
-          usersData /*.where((user) {
-      String userId = user['id'].toString();
-      // This condition is commented out because validDebtorIds is not being calculated
-      // return validDebtorIds.contains(userId);
-      return true; // Temporarily return true for all users
-    })*/
-              .map((user) {
+      displayData = usersData.map((user) {
         String userId = user['id'].toString();
         double predecessorSum = debtorSums[userId] ?? 0.0;
         double expenseSum = expensesSums[userId] ?? 0.0;
         double balance = predecessorSum - expenseSum;
 
-        // Now add this sum to your user display data as the 'predecessor' value
         return {
           'name': user['name'],
           'predecessor': predecessorSum.toString(),
           'expense': expenseSum.toString(),
           'balance': balance.toString(),
-          // ...include other fields that you may want to display
         };
       }).toList();
     });
   }
 
   Future<List<Map<String, dynamic>>> fetchExpenseData() async {
-    // Placeholder for actual HTTP request
     var expensesResponse = await http.get(
         Uri.parse('https://www.buraqgrp.com/admin/api.php?table=expenses'));
     if (expensesResponse.statusCode == 200) {
@@ -144,7 +107,6 @@ class _DebtorsExistingState extends State<DebtorsExisting> {
     }
   }
 
-  // Function to reorder the list
   _onReorder(int oldIndex, int newIndex) {
     setState(() {
       if (newIndex > oldIndex) {
@@ -159,30 +121,29 @@ class _DebtorsExistingState extends State<DebtorsExisting> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Debtors Existing'),
+        title: Text('المدينون الحاليون'),
       ),
       body: Column(
         children: [
-          // Header
           Container(
             color: Theme.of(context).primaryColor,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: const [
                 Expanded(
-                    child: Text('Name',
+                    child: Text('الاسم',
                         textAlign: TextAlign.center,
                         style: TextStyle(color: Colors.white))),
                 Expanded(
-                    child: Text('Predecessor',
+                    child: Text('المبلغ المستحق',
                         textAlign: TextAlign.center,
                         style: TextStyle(color: Colors.white))),
                 Expanded(
-                    child: Text('Expense',
+                    child: Text('المصروفات',
                         textAlign: TextAlign.center,
                         style: TextStyle(color: Colors.white))),
                 Expanded(
-                    child: Text('Balance',
+                    child: Text('الرصيد',
                         textAlign: TextAlign.center,
                         style: TextStyle(color: Colors.white))),
               ],
@@ -190,24 +151,18 @@ class _DebtorsExistingState extends State<DebtorsExisting> {
           ),
           Expanded(
             child: Padding(
-              // Added Padding here
-              padding:
-                  const EdgeInsets.only(top: 8.0), // Adjust the value as needed
+              padding: const EdgeInsets.only(top: 8.0),
               child: ReorderableListView.builder(
                 onReorder: _onReorder,
                 itemCount: displayData.length,
                 itemBuilder: (context, index) {
                   var user = displayData[index];
-                  String predecessor = user[
-                      'predecessor']; // Now contains the actual predecessor value
-                  String expense =
-                      user['expense']; // Now contains the actual expense value
-                  String balance =
-                      user['balance']; // Now contains the actual balance value
+                  String predecessor = user['predecessor'];
+                  String expense = user['expense'];
+                  String balance = user['balance'];
 
                   return Card(
-                    key: ValueKey(
-                        user['name']), // Unique key for ReorderableListView
+                    key: ValueKey(user['name']),
                     elevation: 2.0,
                     margin: const EdgeInsets.symmetric(
                         horizontal: 10.0, vertical: 6.0),

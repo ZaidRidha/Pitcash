@@ -170,7 +170,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   width: double
                       .infinity, // Make the container take all available width
                   child: Text(
-                    'Phone Number',
+                    'رقم التليفون',
                     textAlign: TextAlign.right,
                   ),
                 ),
@@ -195,7 +195,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   width: double
                       .infinity, // Make the container take all available width
                   child: Text(
-                    'Password',
+                    'كلمة المرور',
                     textAlign: TextAlign.right,
                   ),
                 ),
